@@ -1,20 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:module_10/todos.dart';
 
-class UpdateTaskModel extends StatefulWidget {
-  const UpdateTaskModel(
-      {super.key, required this.todo, required this.onTodoUpdate});
+class UpdateTaskModal extends StatefulWidget {
+  const UpdateTaskModal({Key? key, required this.todo, required this.onTodoUpdate}) : super(key: key);
 
   final ToDO todo;
-  final Function(String) onTodoUpdate;
+  final Function(String, String) onTodoUpdate;
 
   @override
-  State<UpdateTaskModel> createState() => _UpdateTaskModel();
+  State<UpdateTaskModal> createState() => _UpdateTaskModalState();
 }
 
-class _UpdateTaskModel extends State<UpdateTaskModel> {
-  late final TextEditingController todoTEController =
-      TextEditingController(text: widget.todo.details);
+class _UpdateTaskModalState extends State<UpdateTaskModal> {
+  late final TextEditingController titleController;
+  late final TextEditingController subtitleController;
+
+  @override
+  void initState() {
+    super.initState();
+    titleController = TextEditingController(text: widget.todo.title);
+    subtitleController = TextEditingController(text: widget.todo.subtitle);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,39 +33,57 @@ class _UpdateTaskModel extends State<UpdateTaskModel> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                "Update todo",
-                style: Theme.of(context).textTheme.titleLarge,
+                "Update Task",
+                style: Theme.of(context).textTheme.headline6,
               ),
               IconButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: Icon(Icons.close))
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: Icon(Icons.close),
+              ),
             ],
           ),
-          //Icon(Icons.close),
+          SizedBox(height: 16),
           TextFormField(
-            controller: todoTEController,
-            maxLines: 4,
+            controller: titleController,
             decoration: InputDecoration(
-              hintText: "Enter Your todo here",
+              labelText: "Title",
+              hintText: "Enter task title",
               enabledBorder: OutlineInputBorder(),
               focusedBorder: OutlineInputBorder(),
             ),
           ),
-          const SizedBox(
-            height: 16,
+          SizedBox(height: 16),
+          TextFormField(
+            controller: subtitleController,
+            decoration: InputDecoration(
+              labelText: "Subtitle",
+              hintText: "Enter task subtitle",
+              enabledBorder: OutlineInputBorder(),
+              focusedBorder: OutlineInputBorder(),
+            ),
           ),
+          SizedBox(height: 16),
           SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                  onPressed: () {
-                    widget.onTodoUpdate(todoTEController.text.trim());
-                    Navigator.pop(context);
-                  },
-                  child: Text("Update")))
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {
+                widget.onTodoUpdate(titleController.text.trim(), subtitleController.text.trim());
+                Navigator.pop(context);
+              },
+              child: Text("Update"),
+            ),
+          ),
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    titleController.dispose();
+    subtitleController.dispose();
+    super.dispose();
   }
 }
